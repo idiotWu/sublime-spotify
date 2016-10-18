@@ -55,7 +55,7 @@ class AppleScriptSpotifyPlayer():
 
     def get_duration(self):
         numstr = self._execute_command('tell application "Spotify" to duration of current track')
-        return int(float(numstr))
+        return int(float(numstr)) // 1000
 
     # Actions
     def play_pause(self):
