@@ -23,7 +23,7 @@ class MusicPlayerStatusUpdater():
         self._cached_album = None
         self._cached_duration = None
 
-        self._update_delay = 400 # Udpate every n milliseconds.
+        self._update_delay = int(s.get("polling"))
         self._cycles_left = self.display_duration * 1000 // self._update_delay
 
         self.bars = ["▁","▂","▄","▅"]
