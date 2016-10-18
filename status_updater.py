@@ -40,10 +40,10 @@ class MusicPlayerStatusUpdater():
     def _get_message(self):
 
         if self.player.is_playing():
-            icon = "►"
+            icon = "▶"
             random.shuffle(self.bars)
         else:
-            icon = "∣∣"
+            icon = "■"
 
         # Simple caching. Relies on the odds of two consecutive
         # songs having the same title being very low.
