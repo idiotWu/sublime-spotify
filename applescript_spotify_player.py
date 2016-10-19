@@ -8,6 +8,12 @@ try:
 except:
     from singleton import Singleton
 
+def str_to_int(numstr = 0):
+    try:
+        return int(float(numstr))
+    except:
+        return 0
+
 # Wrap player interactions to compensate for different naming styles and platforms.
 @Singleton
 class AppleScriptSpotifyPlayer():
@@ -51,11 +57,11 @@ class AppleScriptSpotifyPlayer():
 
     def get_position(self):
         numstr = self._execute_command('tell application "Spotify" to player position')
-        return int(float(numstr))
+        return str_to_int(numstr)
 
     def get_duration(self):
         numstr = self._execute_command('tell application "Spotify" to duration of current track')
-        return int(float(numstr)) // 1000
+        return str_to_int(numstr) // 1000
 
     # Actions
     def play_pause(self):

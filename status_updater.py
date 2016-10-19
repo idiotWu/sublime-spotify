@@ -30,7 +30,7 @@ class MusicPlayerStatusUpdater():
         self.bars = ["▁","▂","▄","▅"]
 
         self._is_displaying = False
-        if self.display_duration < 0 and self.player.is_running(): self.run()
+        if self.display_duration < 0: self.run()
 
     def _get_min_sec_string(self,seconds):
         m = seconds//60
@@ -75,6 +75,7 @@ class MusicPlayerStatusUpdater():
 
     def _run(self):
         start = time.time()
+
         if self._cycles_left == 0:
             sublime.status_message("")
             self._cycles_left = self.display_duration * 1000 / self._update_delay
@@ -85,8 +86,10 @@ class MusicPlayerStatusUpdater():
 
         if self.player.is_running() and not self.player.is_stopped():
             sublime.status_message(self._get_message())
-            end = time.time()
-            duration = (end - start) * 1000
-            set_timeout_async(lambda: self._run(), self._update_delay - duration)
         else:
             self._is_displaying = False
+
+        end = time.time()
+        duration = (end - start) * 1000
+        delay = max(100, self._update_delay - duration)
+        set_timeout_async(lambda: self._run(), delay)
