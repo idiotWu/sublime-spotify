@@ -27,8 +27,10 @@ class AppleScriptSpotifyPlayer():
         self.status_updater = None
 
     def is_running(self):
-        res = self._execute_command('get running of application "Spotify"')
-        return res == "true"
+        # res = self._execute_command('get running of application "Spotify"')
+        # return res == "true"
+        process = Popen('pgrep -x "Spotify Helper" | wc -l', shell=True, stdout=PIPE, stderr=PIPE)
+        return str_to_int(process.communicate()[0]) == 2
 
     def show_status_message(self):
         self.status_updater.run()
