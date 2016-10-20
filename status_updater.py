@@ -84,7 +84,7 @@ class MusicPlayerStatusUpdater():
         elif self._cycles_left > 0:
             self._cycles_left -= 1
 
-        if self.player.is_running() and not self.player.is_stopped():
+        if self.player.is_running() and not self.player.is_paused():
             sublime.status_message(self._get_message())
         else:
             self._is_displaying = False
