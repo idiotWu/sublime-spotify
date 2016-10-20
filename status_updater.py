@@ -19,6 +19,7 @@ class MusicPlayerStatusUpdater():
         self.display_duration = int(s.get("status_duration"))
         self.status_format = s.get("status_format")
 
+        self._curr_pos = None
         self._cached_song = None
         self._cached_artist = None
         self._cached_album = None
@@ -37,24 +38,34 @@ class MusicPlayerStatusUpdater():
         s = seconds - 60*m
         return "%d:%.02d" % (m,s)
 
-    def _get_message(self):
-
-        if self.player.is_playing():
-            icon = "▶"
-            random.shuffle(self.bars)
-        else:
-            icon = "■"
-
+    def _refresh_cache(self):
         # Simple caching. Relies on the odds of two consecutive
         # songs having the same title being very low.
         # Should limit scripting calls.
         curr_song = self.player.get_song()
         if self._cached_song != curr_song:
+            print("refreshed")
             self._cached_song = curr_song
             self._cached_artist = self.player.get_artist()
             self._cached_album = self.player.get_album()
             self._cached_duration_secs = self.player.get_duration()
             self._cached_duration = self._get_min_sec_string(self._cached_duration_secs)
+
+    def _refresh_pos(self):
+        if self.player.is_paused() and self._curr_pos:
+            return self._curr_pos
+
+        self._refresh_cache()
+        self._curr_pos = self._get_min_sec_string(self.player.get_position())
+
+    def _get_message(self):
+        if self.player.is_playing():
+            icon = "▶"
+            random.shuffle(self.bars)
+        else:
+            icon = "||"
+
+        self._refresh_pos()
 
         if self._cached_duration_secs >= 29 and self._cached_duration_secs <= 31:
             return "Spotify Advertisement"
@@ -62,7 +73,7 @@ class MusicPlayerStatusUpdater():
         return self.status_format.format(
             equalizer="".join(self.bars),
             icon=icon,
-            time=self._get_min_sec_string(self.player.get_position()),
+            time=self._curr_pos,
             duration=self._cached_duration,
             song=self._cached_song,
             artist=self._cached_artist,
@@ -84,7 +95,7 @@ class MusicPlayerStatusUpdater():
         elif self._cycles_left > 0:
             self._cycles_left -= 1
 
-        if self.player.is_running() and not self.player.is_paused():
+        if self.player.is_running():
             sublime.status_message(self._get_message())
         else:
             self._is_displaying = False
